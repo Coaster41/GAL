@@ -43,9 +43,10 @@ class Mask(nn.Module):
         return input * weight
 
 class VGG(nn.Module):
-    def __init__(self, num_classes=10, init_weights=True, is_sparse=False, cfg=None, index=None):
+    def __init__(self, num_classes=10, init_weights=True, is_sparse=False, affine=True, cfg=None, index=None):
         super(VGG, self).__init__()
         self.features = nn.Sequential()
+        self._AFFINE = affine
 
         if cfg is None:
             cfg = defaultcfg
