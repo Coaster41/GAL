@@ -57,8 +57,8 @@ python finetune.py \
 
 
 # Training
-# vgg;
-resnet;
+vgg;
+# resnet;
 # googlenet;
 # densenet;
 # Fine-tuning
