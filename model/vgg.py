@@ -90,7 +90,7 @@ class VGG(nn.Module):
                     layers += [conv2d, nn.ReLU(inplace=True)]
                 m = Normal(torch.tensor([norm_mean]*int(v)), torch.tensor([norm_var]*int(v))).sample()
                 init_value = m
-                layers += Mask(init_value)
+                layers += [Mask(init_value)]
                 in_channels = v
         return nn.Sequential(*layers)
 
