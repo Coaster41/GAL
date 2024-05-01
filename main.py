@@ -17,7 +17,7 @@ from model import Discriminator
 from data import cifar10
 import pdb 
 
-device = torch.device(f"cuda:{args.gpus[0]}")
+device = torch.device(f"cuda:0")
 checkpoint = utils.checkpoint(args)
 print_logger = utils.get_logger(os.path.join(args.job_dir, "logger.log"))
 writer_train = SummaryWriter(args.job_dir + '/run/train')
