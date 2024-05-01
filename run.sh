@@ -11,7 +11,7 @@ python main.py \
 }
 
 vgg(){
-PRETRAINED_VGG=[pre-trained model dir]
+PRETRAINED_VGG=vgg19_cifar10.pt
 MIU=1e-1
 LAMBDA=1e-3
 python main.py \
