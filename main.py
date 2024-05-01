@@ -63,8 +63,30 @@ def main():
     model_s = import_module(f'model.{args.arch}').__dict__[args.student_model]().to(device)
 
     model_dict_s = model_s.state_dict()
-    model_dict_s.update(state_dict_t)
-    model_s.load_state_dict(model_dict_s)
+    cfg = [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512]
+
+    
+    new_state_dict = {}
+    for layer_name, arr in state_dict_t.items():
+        if 'feature' in layer_name:
+            cor_layer_num = -1
+            cnt_down = 0
+            cfg_iter = 0
+            split_name = layer_name.split('.')
+            num = int(split_name[1])+1
+            for i in range(num):
+                if cnt_down == 0:
+                    cnt_down = 3 if cfg[cfg_iter] != 'M' else 1
+                    cor_layer_num += 1 if cfg[cfg_iter] != 'M' else 0
+                    cfg_iter += 1
+                cor_layer_num += 1
+                cnt_down -= 1
+            split_name[1] = str(cor_layer_num-1)
+            new_state_dict['.'.join(split_name)] = arr
+
+
+    model_dict_s.update(new_state_dict)
+    model_s.load_state_dict(model_dict_s, strict=False)
 
     if len(args.gpus) != 1:
         model_s = nn.DataParallel(model_s, device_ids=args.gpus)
@@ -75,8 +97,27 @@ def main():
 
     optimizer_d = optim.SGD(model_d.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
-    param_s = [param for name, param in model_s.named_parameters() if 'mask' not in name]
-    param_m = [param for name, param in model_s.named_parameters() if 'mask' in name]
+    mask_index = []
+    cor_layer_num = -1
+    cnt_down = 3
+    cfg_iter = 0
+    while True:
+        mask_index.append(0)
+        cor_layer_num += 1
+        cnt_down -= 1
+        if cnt_down == 0:
+            print(cnt_down)
+            if cfg[cfg_iter] != 'M':
+                mask_index.append(1)
+            cfg_iter += 1
+            if cfg_iter == len(cfg):
+                break
+            cnt_down = 3 if cfg[cfg_iter] != 'M' else 1
+            cor_layer_num += 1 if cfg[cfg_iter] != 'M' else 0
+    print(mask_index)
+
+    param_s = [param for name, param in model_s.named_parameters() if 'classifier' in name or mask_index[int(name.split('.')[1])] == 0]
+    param_m = [param for name, param in model_s.named_parameters() if 'feature' in name and mask_index[int(name.split('.')[1])] == 1]
 
     optimizer_s = optim.SGD(param_s, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     optimizer_m = FISTA(param_m, lr=args.lr, gamma=args.sparse_lambda)
@@ -114,7 +155,7 @@ def main():
         for s in schedulers:
             s.step(epoch)
 
-        train(args, loader.loader_train, models, optimizers, epoch)
+        train(args, loader.loader_train, models, optimizers, epoch, mask_index)
         test_prec1, test_prec5 = test(args, loader.loader_test, model_s)
 
         is_best = best_prec1 < test_prec1
@@ -144,7 +185,7 @@ def main():
 
     model = import_module('utils.preprocess').__dict__[f'{args.arch}'](args, best_model['state_dict_s'])
 
-def train(args, loader_train, models, optimizers, epoch):
+def train(args, loader_train, models, optimizers, epoch, mask_index):
     losses_d = utils.AverageMeter()
     losses_data = utils.AverageMeter()
     losses_g = utils.AverageMeter()
@@ -243,7 +284,7 @@ def train(args, loader_train, models, optimizers, epoch):
         # train mask
         mask = []
         for name, param in model_s.named_parameters():
-            if 'mask' in name:
+            if 'feature' in name and mask_index[int(name.split('.')[1])] == 1:
                 mask.append(param.view(-1))
         mask = torch.cat(mask)
         error_sparse = args.sparse_lambda * torch.norm(mask, 1)

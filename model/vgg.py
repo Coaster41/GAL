@@ -50,6 +50,11 @@ class VGG(nn.Module):
 
         if cfg is None:
             cfg = defaultcfg
+        print(is_sparse)
+        self._AFFINE = affine
+        self.feature = self.make_layers(cfg, True)
+        num_classes = 10
+        self.classifier = nn.Linear(cfg[-1], num_classes)
 
         if is_sparse:
             self.feature = self.make_sparse_layers(cfg, True)
@@ -95,7 +100,7 @@ class VGG(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x = self.features(x)
+        x = self.feature(x)
         x = nn.AvgPool2d(2)(x)
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
