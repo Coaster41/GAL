@@ -18,7 +18,7 @@ parser.add_argument(
 parser.add_argument(
     '--data_dir',
     type=str,
-    default='/home/yanchenqian/data/cifar10/',
+    default='./data/cifar10',
     help='The directory where the input data is stored.')
 parser.add_argument(
     '--job_dir',
