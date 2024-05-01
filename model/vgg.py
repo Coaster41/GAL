@@ -45,17 +45,17 @@ class Mask(nn.Module):
 class VGG(nn.Module):
     def __init__(self, num_classes=10, init_weights=True, is_sparse=False, affine=True, cfg=None, index=None):
         super(VGG, self).__init__()
-        self.features = nn.Sequential()
+        self.feature = nn.Sequential()
         self._AFFINE = affine
 
         if cfg is None:
             cfg = defaultcfg
 
         if is_sparse:
-            self.features = self.make_sparse_layers(cfg, True)
+            self.feature = self.make_sparse_layers(cfg, True)
             self.classifier = nn.Linear(cfg[-1], num_classes)
         else:
-            self.features = self.make_layers(cfg, True)
+            self.feature = self.make_layers(cfg, True)
             self.classifier = nn.Linear(cfg[-1], num_classes)
         
         if init_weights:

@@ -38,7 +38,7 @@ def main():
     model_t = import_module(f'model.{args.arch}').__dict__[args.teacher_model]().to(device)
 
     # Load teacher model
-    ckpt_t = torch.load(args.teacher_dir, map_location=device)
+    ckpt_t = torch.load(args.teacher_dir, map_location=device, strict=False)
     # pdb.set_trace()
 
     if args.arch == 'densenet':
