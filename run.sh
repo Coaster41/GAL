@@ -16,7 +16,7 @@ MIU=1e-1
 LAMBDA=1e-3
 python main.py \
 --teacher_dir $PRETRAINED_VGG \
---arch vgg --teacher_model vgg_16_bn --student_model vgg_16_bn_sparse \
+--arch vgg --teacher_model vgg_19_bn --student_model vgg_19_bn_sparse \
 --lambda $LAMBDA --miu $MIU \
 --job_dir 'experiment/vgg/lambda_'$LAMBDA'_miu_'$MIU 
 } 

@@ -51,7 +51,7 @@ def main():
                 new_key = 'fc.bias'
             state_dict_t[new_key] = v
     else:
-        state_dict_t = ckpt_t['state_dict']
+        state_dict_t = ckpt_t
 
 
     model_t.load_state_dict(state_dict_t)
