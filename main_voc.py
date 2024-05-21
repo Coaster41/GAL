@@ -79,7 +79,7 @@ class VOCnew(datasets.VOCDetection):
 
 class Data:
     def __init__(self):
-        self.loader_train = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='train', download=False,
+        train_dataset = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='train', download=True,
                         transform=transforms.Compose([
                             transforms.Resize(330),
                             transforms.Pad(30),
@@ -89,13 +89,16 @@ class Data:
                             transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
                         ]))
 
-        self.loader_test = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='val', download=False,
+        test_dataset = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='val', download=False,
                         transform=transforms.Compose([
                             transforms.Resize(330), 
                             transforms.CenterCrop(300),
                             transforms.ToTensor(),
                             transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
                         ]))
+        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=4)
+        self.test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=256, shuffle=False, num_workers=4)
+
 
 class VocModel(nn.Module):
     def __init__(self, num_classes, weights=None):
@@ -229,7 +232,7 @@ def main():
     schedulers = [scheduler_d, scheduler_s, scheduler_m]
     for epoch in range(start_epoch, args.num_epochs):
         for s in schedulers:
-            s.step(epoch)
+            s.step()
 
         train(args, loader.loader_train, models, optimizers, epoch)
         test_prec1, test_prec5 = test(args, loader.loader_test, model_s)
@@ -288,7 +291,7 @@ def train(args, loader_train, models, optimizers, epoch):
     real_label = 1
     fake_label = 0
 
-    for i, (inputs, targets) in enumerate(loader_train, 1):
+    for i, (inputs, targets) in enumerate(loader_train):
         num_iters = num_iterations * epoch + i
 
         inputs = inputs.to(device)
@@ -369,12 +372,13 @@ def train(args, loader_train, models, optimizers, epoch):
         losses_sparse.update(error_sparse.item(), inputs.size(0))
         writer_train.add_scalar(
         'sparse_loss', error_sparse.item(), num_iters)
+        decay = (epoch % args.lr_decay_step == 0 and i == 1)
+        if i % args.mask_step == 0:
+            optimizer_m.step()
 
         optimizer_s.step()
 
-        decay = (epoch % args.lr_decay_step == 0 and i == 1)
-        if i % args.mask_step == 0:
-            optimizer_m.step(decay)
+        
         labels_cpu = targets.cpu().detach().numpy()
         outputs_cpu = features_s.cpu().detach().numpy()
         mAP.update(compute_mAP(labels_cpu, outputs_cpu), inputs.size(0))
@@ -415,13 +419,13 @@ def test(args, loader_test, model_s):
     mAP = utils.AverageMeter()
     f1 = utils.AverageMeter()
 
-    cross_entropy = nn.CrossEntropyLoss()
+    cross_entropy = nn.BCEWithLogitsLoss()
 
     # switch to eval mode
     model_s.eval()
 
     with torch.no_grad():
-        for i, (inputs, targets) in enumerate(loader_test, 1):
+        for i, (inputs, targets) in enumerate(loader_test):
             
             inputs = inputs.to(device)
             targets = targets.to(device)
