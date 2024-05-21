@@ -1,13 +1,12 @@
 resnet(){
-PRETRAINED_RESNET=/hdd1/hdd_B/ycq/pretrained/resnet_56.pt
+PRETRAINED_RESNET=resnet34_pretrain.pt
 MIU=1
 LAMBDA=0.6
 python main.py \
 --teacher_dir $PRETRAINED_RESNET \
---arch resnet --teacher_model resnet_56 --student_model resnet_56_sparse \
+--arch resnet --teacher_model resnet_34 --student_model resnet_34_sparse \
 --lambda $LAMBDA --miu $MIU \
---job_dir 'experiment/resnet/lambda_'$LAMBDA'_miu_'$MIU'_test' --gpus 2 \
---data_dir /hdd1/hdd_A/data/cifar10
+--job_dir 'experiment/resnet/lambda_'$LAMBDA'_miu_'$MIU
 }
 
 vgg(){
@@ -57,8 +56,8 @@ python finetune.py \
 
 
 # Training
-vgg;
-# resnet;
+# vgg;
+resnet;
 # googlenet;
 # densenet;
 # Fine-tuning
