@@ -79,7 +79,7 @@ class VOCnew(datasets.VOCDetection):
 
 class Data:
     def __init__(self):
-        self.trainLoader = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='train', download=False,
+        self.loader_train = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='train', download=False,
                         transform=transforms.Compose([
                             transforms.Resize(330),
                             transforms.Pad(30),
@@ -89,7 +89,7 @@ class Data:
                             transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
                         ]))
 
-        self.testLoader = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='val', download=False,
+        self.loader_test = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='val', download=False,
                         transform=transforms.Compose([
                             transforms.Resize(330), 
                             transforms.CenterCrop(300),
