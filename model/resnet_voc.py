@@ -21,7 +21,7 @@ class Mask(nn.Module):
     def __init__(self, init_value=[1], planes=None):
         super().__init__()
         self.planes = planes
-        self.weight = torch.Parameter(torch.Tensor(init_value))
+        self.weight = torch.nn.Parameter(torch.Tensor(init_value))
 
     def forward(self, input):
         weight = self.weight
