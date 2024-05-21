@@ -101,7 +101,7 @@ class VocModel(nn.Module):
     def __init__(self, num_classes, weights=None):
         super().__init__()
         # Use a pretrained model
-        self.network = resnet_voc.resnet34(weights=weights, map=True)
+        self.network = resnet_voc.resnet34(weights=weights, mask=True)
         # Replace last layer
         self.network.fc = nn.Linear(self.network.fc.in_features, num_classes)
 
