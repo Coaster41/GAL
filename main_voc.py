@@ -394,7 +394,7 @@ def train(args, loader_train, models, optimizers, epoch):
                 'Loss_data {loss_data.val:.4f} ({loss_data.avg:.4f})\t'
                 'Loss_d {loss_d.val:.4f} ({loss_d.avg:.4f})\t'
                 'Loss_g {loss_g.val:.4f} ({loss_g.avg:.4f})\t'
-                'mAP {mAP.val*100:.3f} ({mAP.avg*100:.3f})\t'
+                'mAP {mAP.val:.5f} ({mAP.avg:.5f})\t'
                 'f1_score {f1.val:.3f} ({f1.avg:.3f})'.format(
                 epoch, i, num_iterations, loss_sparse=losses_sparse, loss_data=losses_data, loss_g=losses_g, loss_d=losses_d, mAP=mAP, f1=f1))
             
@@ -442,7 +442,7 @@ def test(args, loader_test, model_s):
             # top1.update(prec1[0], inputs.size(0))
             # top5.update(prec5[0], inputs.size(0))
         
-        print_logger.info('mAP {mAP.avg*100:.3f} f1_score {f1.avg:.3f}'
+        print_logger.info('mAP {mAP.avg:.5f} f1_score {f1.avg:.3f}'
         .format(mAP=mAP, f1=f1))
 
     return mAP.avg, f1.avg
