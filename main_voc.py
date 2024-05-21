@@ -266,8 +266,8 @@ def train(args, loader_train, models, optimizers, epoch):
     losses_data = utils.AverageMeter()
     losses_g = utils.AverageMeter()
     losses_sparse = utils.AverageMeter()
-    mAP = utils.AverageMeter(':6.3f')
-    f1 = utils.AverageMeter(':.4e')
+    mAP = utils.AverageMeter()
+    f1 = utils.AverageMeter()
 
     model_t = models[0]
     model_s = models[1]
@@ -412,8 +412,8 @@ def test(args, loader_test, model_s):
     # top1 = utils.AverageMeter()
     # top5 = utils.AverageMeter()
     
-    mAP = utils.AverageMeter(':6.3f')
-    f1 = utils.AverageMeter(':.4e')
+    mAP = utils.AverageMeter()
+    f1 = utils.AverageMeter()
 
     cross_entropy = nn.CrossEntropyLoss()
 
