@@ -96,8 +96,8 @@ class Data:
                             transforms.ToTensor(),
                             transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
                         ]))
-        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=4)
-        self.test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=256, shuffle=False, num_workers=4)
+        self.loader_train = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=4)
+        self.loader_test = torch.utils.data.DataLoader(test_dataset, batch_size=256, shuffle=False, num_workers=4)
 
 
 class VocModel(nn.Module):
