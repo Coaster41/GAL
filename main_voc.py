@@ -170,7 +170,7 @@ def main():
     if len(args.gpus) != 1:
         model_s = nn.DataParallel(model_s, device_ids=args.gpus)
 
-    model_d = Discriminator().to(device) 
+    model_d = Discriminator(num_classes=20).to(device) 
 
     models = [model_t, model_s, model_d]
 
@@ -260,9 +260,9 @@ def main():
 
     print_logger.info(f"Best @prec1: {best_prec1:.3f} @prec5: {best_prec5:.3f}")
 
-    best_model = torch.load(f'{args.job_dir}/checkpoint/model_best.pt', map_location=device)
+    # best_model = torch.load(f'{args.job_dir}/checkpoint/model_best.pt', map_location=device)
 
-    model = import_module('utils.preprocess').__dict__[f'{args.arch}'](args, best_model['state_dict_s'])
+    # model = import_module('utils.preprocess').__dict__[f'{args.arch}'](args, best_model['state_dict_s'])
 
 def train(args, loader_train, models, optimizers, epoch):
     losses_d = utils.AverageMeter()
