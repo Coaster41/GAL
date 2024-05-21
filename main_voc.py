@@ -78,7 +78,7 @@ class VOCnew(datasets.VOCDetection):
         return voc_dict
 
 class Data:
-    def __init__(self, args):
+    def __init__(self):
         self.trainLoader = VOCnew(root=r'/tmp/public_dataset/pytorch/pascalVOC-data', image_set='train', download=False,
                         transform=transforms.Compose([
                             transforms.Resize(330),
