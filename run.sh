@@ -2,7 +2,7 @@ resnet(){
 PRETRAINED_RESNET=resnet34_pretrain.pt
 MIU=1
 LAMBDA=0.6
-python main.py \
+python main_voc.py \
 --teacher_dir $PRETRAINED_RESNET \
 --arch resnet --teacher_model resnet_34 --student_model resnet_34_sparse \
 --lambda $LAMBDA --miu $MIU \
